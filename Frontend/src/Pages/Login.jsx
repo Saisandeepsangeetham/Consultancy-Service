@@ -35,6 +35,7 @@ const Login = () => {
 
       if (result.success) {
         // Successfully logged in
+        alert("Login Successfull");
         navigate("/form", { replace: true });
       } else {
         setError(result.error || "Login failed");
