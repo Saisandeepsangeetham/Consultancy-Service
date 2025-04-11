@@ -2,6 +2,7 @@ import User from "../Model/modelSchema.js";
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import path from "path";
+import bcrypt from "bcryptjs";
 import fs from "fs";
 import { google } from "googleapis";
 import { createFolder, uploadFile } from '../Configuration/googleDriveSetup.js';
@@ -92,6 +93,28 @@ export const register = async (req, res) => {
   }
 };
 
+
+export const forgotPsd = async(req,res)=>{
+  const {email,psd} = req.body;
+  try{
+    const user = await User.findOne({ email :email });
+  if (!user) {
+    return res.status(404).json({ success: false, message: "User not found" });
+  }
+  
+  user.password = psd;
+  await user.save(); 
+  res.status(200).json({ success: true, message: "Password updated successfully" });
+  }
+
+  catch(error){
+    console.log(error);
+    res.status(500).json({message:error});
+  }
+  
+
+  
+};
 
 const uploadDir = "uploads";
 if (!fs.existsSync(uploadDir)) {
@@ -235,4 +258,5 @@ export const handleSubmit = async (req, res) => {
     }
   });
 };
+
 
