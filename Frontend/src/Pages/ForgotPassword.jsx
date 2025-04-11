@@ -1,47 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../CSS/login.css";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../Helpers/api_communicator";
+import { forgotPsd } from "../Helpers/api_communicator";
 
-const Login = () => {
+const ForgotPassword = () => {
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({ email: "", psd: "" });
+  const [credentials, setCredentials] = useState({
+    email: "",
+    psd: ""
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Check if user is already logged in
-  useEffect(() => {
+  React.useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       navigate("/form");
     }
   }, [navigate]);
 
-  const gotoSignup = () => {
-    navigate("/signup");
+  const gotoLogin = () => {
+    navigate("/");
   };
 
-  const gotoForgotPsd = ()=>{
-    navigate("/forgotPsd");
-  };
-
-  const handleLogin = async (event) => {
+  const handleForgotPsd = async (event) => {
     event.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const result = await loginUser(credentials);
-
+      const result = await forgotPsd(credentials);
+        
       if (result.success) {
-        // Successfully logged in
-        navigate("/form", { replace: true });
+        navigate("/", {
+          state: { message: "Updation successful! Please login." },
+        });
       } else {
-        setError(result.error || "Login failed");
+        setError(result.error || "Updation failed");
       }
-    } catch (err) {
+    } catch (error) {
       setError("An unexpected error occurred");
-      console.error(err);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -51,24 +50,31 @@ const Login = () => {
     <div className="login_container">
       <div className="brand"></div>
       <div className="login">
-        <form onSubmit={handleLogin}>
-          <h2>LOGIN</h2>
+        <form onSubmit={handleForgotPsd}>
+          <h2>Forgot Password</h2>
+          
           <input
             type="email"
             placeholder="Enter your email"
             value={credentials.email}
             onChange={(e) =>
-              setCredentials({ ...credentials, email: e.target.value })
+              setCredentials({
+                ...credentials,
+                email: e.target.value,
+              })
             }
             required
           />
           <input
             type="password"
-            placeholder="Enter your password"
+            placeholder="Enter your new password"
             value={credentials.psd}
-            onChange={(e) =>
-              setCredentials({ ...credentials, psd: e.target.value })
-            }
+            onChange={(e) =>{
+              setCredentials({
+                ...credentials,
+                psd: e.target.value,
+              })
+            }}
             required
           />
           {error && (
@@ -85,15 +91,11 @@ const Login = () => {
           )}
           <input
             type="submit"
-            value={loading ? "Logging in..." : "Login"}
+            value={loading ? "Changing Password..." : "Change Password"}
             disabled={loading}
           />
-          <a onClick={gotoSignup} style={{ cursor: "pointer" }}>
-            Don't have an account?
-          </a>
-
-          <a onClick={gotoForgotPsd} style={{ cursor: "pointer" }}>
-            Forgot Password
+          <a onClick={gotoLogin} style={{ cursor: "pointer" }}>
+            Already have an account?
           </a>
         </form>
       </div>
@@ -101,4 +103,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

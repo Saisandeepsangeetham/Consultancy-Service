@@ -41,3 +41,22 @@ export const registerUser = async (credentials) => {
         };
     }
 };
+
+
+export const forgotPsd = async (credentials) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/forgotPsd`, {            
+            email: credentials.email,
+            psd: credentials.psd
+        });
+        
+        if (response.status === 200) {
+            return { success: true, data: response.data };
+        }
+    } catch (error) {
+        return {
+            success: false,
+            error: error.response?.data?.message || "An error occurred during registration"
+        };
+    }
+};

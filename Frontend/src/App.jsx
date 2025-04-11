@@ -1,13 +1,9 @@
 import Login from './Pages/Login'
 import Signup from './Pages/Signup'
 import Form from './Pages/Form'
+import ForgotPassword from "./Pages/ForgotPassword"
 
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import {BrowserRouter as Router,Routes,Route,Navigate} from "react-router-dom";
 import './App.css'
 
 const ProtectedRoute = ({ children }) => {
@@ -34,7 +30,10 @@ function App() {
           }
         />
 
+        <Route path ="/forgotPsd" element ={<ForgotPassword/>}/>
+
         <Route path="*" element={<Navigate to="/" replace />} />
+        {/* "replace" prevents the user from pressing "Back" to return to the unknown route (it replaces it in the browser history). */}
       </Routes>
     </Router>
   );
