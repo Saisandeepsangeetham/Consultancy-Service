@@ -1,0 +1,70 @@
+.login_container {
+    display: flex;
+    flex-direction: row;
+    width: 60%;
+    height: 80vh;
+    margin: auto;
+    margin-top: 50px;
+    background-color: aqua;
+    border-radius: 50px;
+    overflow: hidden;
+    transition:box-shadow .5s ease-in-out;
+    
+}
+.login_container:hover{
+    box-shadow: 5px 5px 20px rgb(0, 0, 0);
+}
+
+.brand {
+    width: 150%; /* Adjust width for better balance */
+    background-image: url("../assets/login_img.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.login {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(82, 82, 78, 0.688);
+    
+}
+
+.login form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+   
+}
+.login form h2 {
+   padding:0px 50px;
+   background-color: white;
+   border-radius: 10px;
+   box-shadow: 2px 2px 2px rgb(0, 0, 0);
+   
+}
+
+.login input {
+    margin: 10px 0; /* Spacing between inputs */
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: white;
+    border: 1px solid rgb(0, 0, 0);
+    width:250px;
+}
+.login input[type="submit"] {
+   width:100%;
+   background-color: rgba(0, 0, 0, 0.692);
+   color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease-out;      
+
+}
+
+.login input[type="submit"]:hover {
+    background-color: rgba(255, 255, 255, 0.344);;
+}
