@@ -3,7 +3,7 @@ import "../CSS/login.css";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../Helpers/api_communicator";
 
-const Login = () => {
+const Login = () => {  
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({ email: "", psd: "" });
   const [error, setError] = useState("");
