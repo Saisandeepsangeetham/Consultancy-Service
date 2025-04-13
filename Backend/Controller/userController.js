@@ -213,7 +213,7 @@ export const handleSubmit = async (req, res) => {
       const agreementLink = `https://drive.google.com/file/d/${agreementDriveId}/view`;
 
       const auth = new google.auth.GoogleAuth({
-        keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json", 
+        keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json", 
         scopes: ["https://www.googleapis.com/auth/spreadsheets"],
       });
       const client = await auth.getClient();
@@ -264,7 +264,7 @@ export const getSubmissions = async (req, res) => {
 
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
+      keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
       scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
     });
 
@@ -315,7 +315,7 @@ export const getByPI = async (req, res) => {
 
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
+      keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
       scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
     });
 
@@ -369,7 +369,7 @@ export const getByCoPI = async (req, res) => {
 
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
+      keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
       scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
     });
 
@@ -427,7 +427,7 @@ export const getBySanctionedAmountRange = async (req, res) => {
   try {
     
     const auth = new google.auth.GoogleAuth({
-      keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
+      keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
       scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
     });
 
@@ -478,6 +478,60 @@ export const getBySanctionedAmountRange = async (req, res) => {
   } catch (error) {
     console.error("Error fetching or filtering data:", error);
     res.status(500).json({ error: "An error occurred while fetching or filtering data." });
+  }
+};
+
+export const getByIndustryName = async (req, res) => {
+  const { industryName } = req.params;
+
+  try {
+    const auth = new google.auth.GoogleAuth({
+      keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
+      scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+    });
+
+    const client = await auth.getClient();
+    const sheets = google.sheets({ version: "v4", auth: client });
+
+    const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+    const range = "Sheet1!A2:M"; 
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range,
+    });
+
+    const rows = response.data.values;
+
+    if (!rows || rows.length === 0) {
+      return res.status(200).json({ data: [], message: "No data found in the sheet." });
+    }
+
+    const formattedData = rows.map((row) => ({
+      industryName: row[0] || "",
+      projectDuration: row[1] || "",
+      projectTitle: row[2] || "",
+      pi: row[3] || "",
+      coPI: row[4] || "",
+      academicYear: row[5] || "",
+      amountSanctioned: row[6] || "",
+      amountReceived: row[7] || "",
+      billDetails: row[8] || "",
+      billProofLink: row[9] || "",
+      agreementLink: row[10] || "",
+      studentDetails: row[11] || "",
+      projectSummary: row[12] || "",
+    }));
+
+    const filteredData = formattedData.filter((entry) => {
+      // Ensure industryName exists before calling toLowerCase()
+      return entry.industryName && entry.industryName.toLowerCase().includes(industryName.toLowerCase());
+    });
+
+    res.status(200).json({ data: filteredData });
+  } catch (error) {
+    console.error("Error filtering by Industry Name:", error); // Updated error message
+    res.status(500).json({ error: "An error occurred while filtering by Industry Name." }); // Updated error message
   }
 };
 
