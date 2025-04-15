@@ -7,10 +7,35 @@ import fs from "fs";
 import { google } from "googleapis";
 import { createFolder, uploadFile } from '../Configuration/googleDriveSetup.js';
 import  dotenv  from 'dotenv';
-import sgEmail from '@sendgrid/mail';
 import nodemailer from 'nodemailer';
 
 dotenv.config();
+
+export const getUserEmailRoute = async(req,res)=>{
+  const authHeader = req.headers.authorization;
+
+  if(!authHeader || !authHeader.startsWith("Bearer ")){
+    return res.status(401).json({error: "Authorization Token missing"});
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+    const userId = decoded.id;
+
+    const user = await User.findById(userId).select("email");
+
+    if (!user) {
+      return res.status(404).json({error:"user not found"});
+    }
+
+    return res.status(200).json({message: user.email});
+  } catch (error) {
+    console.error("Error decoding token or fetching user:", error);
+    return res.status(500).json({error:"Something went wrong"});
+  }
+}
 
 export const login = async (req, res) => {
   try {
@@ -116,6 +141,66 @@ export const forgotPsd = async(req,res)=>{
   
 
   
+};
+
+const otpStore = {};
+
+export const generateOTP = async (req, res) => {
+  try {
+    const {email} = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Invalid authorization header" });
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); 
+    otpStore[email] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 }; 
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your OTP Code",
+      html: `<h3>Your OTP is: <b>${otp}</b></h3><p>It is valid for 5 minutes.</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: "OTP sent successfully" });
+  } catch (error) {
+    console.error("Error in generateOTP:", error); 
+    return res.status(500).json({ error: "Failed to send OTP" });
+  }
+};
+
+export const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ error: "Email and OTP are required" });
+  }
+
+  const record = otpStore[email];
+  if (!record) {
+    return res.status(400).json({ error: "OTP not found" });
+  }
+
+  if (Date.now() > record.expiresAt) {
+    delete otpStore[email];
+    return res.status(400).json({ error: "OTP expired" });
+  }
+
+  if (record.otp !== otp) {
+    return res.status(400).json({ error: "Invalid OTP" });
+  }
+
+  delete otpStore[email];
+  res.json({ message: "OTP verified successfully" });
 };
 
 const getUserEmail = async(authHeader)=>{
@@ -396,8 +481,6 @@ export const getSubmissions = async (req, res) => {
     res.status(500).json({ error: "An error occurred while fetching data from the sheet." });
   }
 };
-
-
 
 export const getByPI = async (req, res) => {
   const { pi } = req.params;

@@ -82,3 +82,36 @@ export const formsubmission = async (formData) => {
         };
     }
 };
+
+export const generateOTP = async (email) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/generateOTP`, { email });
+    if (response.status === 200) {
+      return { success: true, message: response.data.message };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to send OTP",
+    };
+  }
+};
+
+export const verifyOtp = async (data) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/verifyOTP`, data);
+    if (response.status === 200) {
+      return {
+        success: true,
+        message: response.data.message,
+        status: 200,
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.message || "Failed to verify OTP",
+    };
+  }
+};
+

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../CSS/login.css";
 import { useNavigate } from "react-router-dom";
 import { forgotPsd } from "../Helpers/api_communicator";
@@ -7,16 +7,24 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     email: "",
-    psd: ""
+    psd: "",
+    confirmPsd: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  React.useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/form");
+  useEffect(() => {
+    const verifiedEmail = sessionStorage.getItem("verified_email");
+
+    if (!verifiedEmail) {
+      navigate("/verifyotp");
+      return;
     }
+
+    setCredentials((prev) => ({
+      ...prev,
+      email: verifiedEmail,
+    }));
   }, [navigate]);
 
   const gotoLogin = () => {
@@ -25,18 +33,26 @@ const ForgotPassword = () => {
 
   const handleForgotPsd = async (event) => {
     event.preventDefault();
+
+    if (credentials.psd !== credentials.confirmPsd) {
+      setError("Passwords do not match");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
       const result = await forgotPsd(credentials);
-        
+
       if (result.success) {
+        sessionStorage.removeItem("verified_email");
+
         navigate("/", {
-          state: { message: "Updation successful! Please login." },
+          state: { message: "Password successfully updated! Please login." },
         });
       } else {
-        setError(result.error || "Updation failed");
+        setError(result.error || "Password update failed");
       }
     } catch (error) {
       setError("An unexpected error occurred");
@@ -51,29 +67,36 @@ const ForgotPassword = () => {
       <div className="brand"></div>
       <div className="login">
         <form onSubmit={handleForgotPsd}>
-          <h2>Forgot Password</h2>
-          
+          <h2>Reset Password</h2>
+
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder="Your verified email"
             value={credentials.email}
-            onChange={(e) =>
-              setCredentials({
-                ...credentials,
-                email: e.target.value,
-              })
-            }
+            disabled
             required
           />
           <input
             type="password"
             placeholder="Enter your new password"
             value={credentials.psd}
-            onChange={(e) =>{
+            onChange={(e) => {
               setCredentials({
                 ...credentials,
                 psd: e.target.value,
-              })
+              });
+            }}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Confirm your new password"
+            value={credentials.confirmPsd}
+            onChange={(e) => {
+              setCredentials({
+                ...credentials,
+                confirmPsd: e.target.value,
+              });
             }}
             required
           />
@@ -91,11 +114,11 @@ const ForgotPassword = () => {
           )}
           <input
             type="submit"
-            value={loading ? "Changing Password..." : "Change Password"}
+            value={loading ? "Updating Password..." : "Update Password"}
             disabled={loading}
           />
           <a onClick={gotoLogin} style={{ cursor: "pointer" }}>
-            Already have an account?
+            Remember your password? Login
           </a>
         </form>
       </div>
