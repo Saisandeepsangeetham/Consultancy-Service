@@ -61,22 +61,24 @@ export const forgotPsd = async (credentials) => {
     }
 };
 
-export const formsubmission = async(formData)=>{
-    try{
+export const formsubmission = async (formData) => {
+    try {
+        const token = localStorage.getItem('token');
         const response = await axios.post(
             "http://localhost:8000/api/submit",
             formData,
             {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    "Authorization": `Bearer ${token}`
+                },
             }
-          );
+        );
         return response;
-    }catch(error){
+    } catch (error) {
         return {
             success: false,
             error: error.response?.data?.message || "An error occurred during form submission"
         };
     }
-}
+};
