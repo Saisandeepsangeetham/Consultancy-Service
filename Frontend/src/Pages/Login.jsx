@@ -22,7 +22,7 @@ const Login = () => {
   };
 
   const gotoForgotPsd = ()=>{
-    navigate("/forgotPsd");
+    navigate("/verifyotp");
   };
 
   const handleLogin = async (event) => {

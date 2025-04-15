@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import ViewData from "./Pages/ViewData";
+import OTP from "./Pages/OTP";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -26,6 +27,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/verifyotp" element={<OTP />} />
+        <Route path="/forgotPsd" element={<ForgotPassword />} />
 
         <Route
           path="/form"
@@ -45,10 +48,7 @@ function App() {
           }
         />
 
-        <Route path="/forgotPsd" element={<ForgotPassword />} />
-
         <Route path="*" element={<Navigate to="/" replace />} />
-        {/* "replace" prevents the user from pressing "Back" to return to the unknown route (it replaces it in the browser history). */}
       </Routes>
     </Router>
   );
