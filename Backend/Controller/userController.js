@@ -213,7 +213,7 @@ export const handleSubmit = async (req, res) => {
       const agreementLink = `https://drive.google.com/file/d/${agreementDriveId}/view`;
 
       const auth = new google.auth.GoogleAuth({
-        keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json", 
+        keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json", 
         scopes: ["https://www.googleapis.com/auth/spreadsheets"],
       });
       const client = await auth.getClient();
@@ -264,7 +264,7 @@ export const getSubmissions = async (req, res) => {
 
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
+      keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
       scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
     });
 
@@ -315,7 +315,7 @@ export const getByPI = async (req, res) => {
 
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
+      keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
       scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
     });
 
@@ -369,7 +369,7 @@ export const getByCoPI = async (req, res) => {
 
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
+      keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
       scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
     });
 
@@ -427,7 +427,7 @@ export const getBySanctionedAmountRange = async (req, res) => {
   try {
     
     const auth = new google.auth.GoogleAuth({
-      keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
+      keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
       scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
     });
 
@@ -486,7 +486,7 @@ export const getByIndustryName = async (req, res) => {
 
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: "/home/saisandeep845/Desktop/Consultancy Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
+      keyFile: "C:/Users/sriva/OneDrive/Desktop/sem/sem6/Internet Programming/Consultancy-Service/Backend/Credentials/wise-bongo-451704-r2-11c606e1ced8.json",
       scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
     });
 
