@@ -7,6 +7,8 @@ import fs from "fs";
 import { google } from "googleapis";
 import { createFolder, uploadFile } from '../Configuration/googleDriveSetup.js';
 import  dotenv  from 'dotenv';
+import sgEmail from '@sendgrid/mail';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
@@ -18,8 +20,8 @@ export const login = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Please provide email and password",
-      });
-    }
+      }
+    )};
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -115,6 +117,31 @@ export const forgotPsd = async(req,res)=>{
 
   
 };
+
+const getUserEmail = async(authHeader)=>{
+
+  if(!authHeader || !authHeader.startsWith("Bearer ")){
+    throw new Error("Authorization token missing or invalid" );
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // ✅ decode token
+    const userId = decoded.id;
+
+    const user = await User.findById(userId).select("email"); // Fetch only email
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user.email;
+  } catch (error) {
+    console.error("Error decoding token or fetching user:", error);
+    throw new Error("Erro in fetching email");
+  }
+}
 
 const uploadDir = "uploads";
 if (!fs.existsSync(uploadDir)) {
@@ -246,7 +273,22 @@ export const handleSubmit = async (req, res) => {
           values: [newRow],
         },
       });
+
+      const userEmail = await getUserEmail(req.headers.authorization)
       
+      await notifyUser(userEmail, {
+        industryName,
+        projectDuration,
+        projectTitle,
+        pi,
+        coPI,
+        academicYear,
+        amountSanctioned,
+        amountReceived,
+        studentDetails,
+        projectSummary,
+      });
+
       res.status(200).json({
         message: "Data successfully appended to Google Sheet and files uploaded to Google Drive.",
         billProofLink,
@@ -259,6 +301,53 @@ export const handleSubmit = async (req, res) => {
   });
 };
 
+export const notifyUser = async(toEmail, data) => {
+  const {
+    industryName,
+    projectDuration,
+    projectTitle,
+    pi,
+    coPI,
+    academicYear,
+    amountSanctioned,
+    amountReceived,
+    studentDetails,
+    projectSummary,
+  } = data;
+  
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER, 
+      pass: process.env.EMAIL_PASS  
+    }
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: toEmail,
+    subject: `📢 New Consultancy Project Entry: ${projectTitle}`,
+    html: `
+      <h3>New Project Submitted</h3>
+      <p><strong>Industry Name:</strong> ${industryName}</p>
+      <p><strong>Project Title:</strong> ${projectTitle}</p>
+      <p><strong>PI:</strong> ${pi}</p>
+      <p><strong>Co-PI:</strong> ${coPI}</p>
+      <p><strong>Academic Year:</strong> ${academicYear}</p>
+      <p><strong>Duration:</strong> ${projectDuration}</p>
+      <p><strong>Sanctioned Amount:</strong> ₹${amountSanctioned}</p>
+      <p><strong>Received Amount:</strong> ₹${amountReceived}</p>
+      <p><strong>Student Details:</strong> ${studentDetails}</p>
+      <p><strong>Project Summary:</strong> ${projectSummary}</p>`
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Notification sent successfully:", info.messageId);
+  } catch (error) {
+    console.log("An error occured",error);
+  }
+}
 
 export const getSubmissions = async (req, res) => {
 
